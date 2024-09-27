@@ -1,6 +1,7 @@
 import zipfile
 import shutil
 import os
+import sys
 import xml.etree.ElementTree as ElementTree
 
 def unzip_docx(file_path):
@@ -33,7 +34,17 @@ def search_for_text(input_str, files):
     for i in range(len(files)):
         unzip_docx(files[i])
         
+def main():
+    if( len(sys.argv) < 2 ):
+        print("invoke as python3 fileIterator.py <file1> <file2> ... <file n>")
+        exit()
 
-initParser()
-test_files = ['ir.docx']
-search_for_text('test', test_files)
+    input_files = [None] * (len(sys.argv) - 1) #initialize array for sizse of files 
+
+    for i in range(1, len(sys.argv)): #takes files as command line args
+        input_files[i-1] = sys.argv[i]
+
+    initParser()
+    search_for_text("test", input_files)
+
+main()
