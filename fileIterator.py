@@ -30,9 +30,17 @@ def get_text(xml_tree_root):
 def initParser():
     os.mkdir('text_docs')
 
-def search_for_text(input_str, files):
-    for i in range(len(files)):
+def pull_xml(files):
+    for i in range(len(files)): #pull all xml files out
         unzip_docx(files[i])
+
+def search_for_text(key, files):
+    for i in range(len(files)):
+        end_location = files[i].find('.')
+        file_name = './text_docs/' + files[i][0:end_location] + '.xml'
+        root = get_xml_root(file_name)
+        text = get_text(root)
+        print(text)
         
 def main():
     if( len(sys.argv) < 2 ):
@@ -45,6 +53,7 @@ def main():
         input_files[i-1] = sys.argv[i]
 
     initParser()
-    search_for_text("test", input_files)
+    pull_xml(input_files)
+    search_for_text("monitoring", input_files)
 
 main()
