@@ -40,7 +40,11 @@ def search_for_text(key, files):
         file_name = './text_docs/' + files[i][0:end_location] + '.xml'
         root = get_xml_root(file_name)
         text = get_text(root)
-        print(text)
+        for i in range(len(text)):
+            if( text[i].find(key) > 0 ):
+                print(text[i])
+        #substring = text.find(key)
+        #print(substring)
         
 def main():
     if( len(sys.argv) < 2 ):
