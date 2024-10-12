@@ -4,6 +4,14 @@ import os
 import sys
 import xml.etree.ElementTree as ElementTree
 
+debug = False
+
+def clean():
+    try:
+        shutil.rmtree('text_docs')
+    except:
+        print("no 'text_docs directory found to delete")
+
 def unzip_docx(file_path):
     docx = zipfile.ZipFile(file_path, 'r')
     docx.extract('word/document.xml') #extract the xml file containing text contents
@@ -40,24 +48,36 @@ def search_for_text(key, files):
         file_name = './text_docs/' + files[i][0:end_location] + '.xml'
         root = get_xml_root(file_name)
         text = get_text(root)
+        instances = 0
+        print("\nSearching " + files[i][0:end_location] + '.xml' + ' for ' + key + ':\n')
         for i in range(len(text)):
             if( text[i].find(key) > 0 ):
-                print(text[i])
-        #substring = text.find(key)
-        #print(substring)
+                instances += 1
+                print("Found instance " + str(instances) + ":\n" + text[i])
+        
+        if( instances == 0 ):
+            print("No instances found")
         
 def main():
-    if( len(sys.argv) < 2 ):
-        print("invoke as python3 fileIterator.py <file1> <file2> ... <file n>")
+    if( len(sys.argv) < 3 ):
+        print("invoke as python3 fileIterator.py <keyword> <file1> <file2> ... <file n>")
         exit()
 
-    input_files = [None] * (len(sys.argv) - 1) #initialize array for sizse of files 
+    if( not debug ): #code we want to execute 
 
-    for i in range(1, len(sys.argv)): #takes files as command line args
-        input_files[i-1] = sys.argv[i]
+        keyword = sys.argv[1]
 
-    initParser()
-    pull_xml(input_files)
-    search_for_text("monitoring", input_files)
+        input_files = [None] * (len(sys.argv) - 2) #initialize array for sizse of files 
+
+        for i in range(2, len(sys.argv)): #takes files as command line args
+            input_files[i-2] = sys.argv[i]
+
+        initParser()
+        pull_xml(input_files)
+        search_for_text(keyword, input_files)
+        clean()
+
+    if( debug ): #code to test if we want to debug 
+        print(len(sys.argv))
 
 main()
