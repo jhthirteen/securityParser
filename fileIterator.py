@@ -3,6 +3,8 @@ import shutil
 import os
 import sys
 import xml.etree.ElementTree as ElementTree
+import tkinter as tk
+from tkinter import filedialog
 
 debug = False
 
@@ -59,22 +61,27 @@ def search_for_text(key, files):
             print("No instances found")
         
 def main():
-    if( len(sys.argv) < 3 ):
-        print("invoke as python3 fileIterator.py <keyword> <file1> <file2> ... <file n>")
+    if( len(sys.argv) < 2 ):
+        print("invoke as python3 fileIterator.py <keyword>")
         exit()
 
     if( not debug ): #code we want to execute 
 
         keyword = sys.argv[1]
 
-        input_files = [None] * (len(sys.argv) - 2) #initialize array for sizse of files 
+        #window = tk.Tk()
+        #window.title("File Parser for Security Policies")
+        files = filedialog.askopenfilenames()
+        file_names = [None] * len(files)
+        for i in range(len(files)):
+            start_location = files[i].rfind('/')
+            file_names[i] = files[i][start_location+1:len(files[i])]
 
-        for i in range(2, len(sys.argv)): #takes files as command line args
-            input_files[i-2] = sys.argv[i]
+        #window.mainloop()
 
         initParser()
-        pull_xml(input_files)
-        search_for_text(keyword, input_files)
+        pull_xml(file_names)
+        search_for_text(keyword, file_names)
         clean()
 
     if( debug ): #code to test if we want to debug 
