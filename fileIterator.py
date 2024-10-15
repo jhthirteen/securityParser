@@ -10,19 +10,35 @@ debug = False
 
 def build_window():
     keyword = []
-    def get_input(entry):
-        keyword.append(entry.widget.get())
+    def get_input(entry): #function that adds whatever string is entered in the field to the keyword array
+        keyword.append(entry.widget.get()) #append the word the user entered in a box 
         window.destroy()
     
     window = tk.Tk()
     window.title("File Parser for Security Policies")
-    window.geometry("500x500")
+    window.geometry("1000x1000")
 
     entry = tk.Entry(window, width=40)
-    entry.pack()
-    entry.bind("<Return>", get_input)
+    entry.pack() #adds entry filed to the window 
+    entry.bind("<Return>", get_input) #key-binds the return key to call get_input function 
 
-    window.mainloop()
+    intro = tk.StringVar(window, "Quick .docx parser")
+    intro_label = tk.Label(window, textvariable=intro)
+    intro_label.pack()
+
+    step_one = tk.StringVar(window, "1) Enter a keyword you wish to search for and press the ENTER key")
+    step_one_label = tk.Label(window, textvariable=step_one)
+    step_one_label.pack()
+
+    step_two = tk.StringVar(window, "2) A file dialog window will appear, select the files you wish to search. To select multiple files, click and drag the highlight box")
+    step_two_label = tk.Label(window, textvariable=step_two)
+    step_two_label.pack()
+
+    step_three = tk.StringVar(window, "3) Results of a search for each individual file will be outputted to the terminal")
+    step_three_label = tk.Label(window, textvariable=step_three)
+    step_three_label.pack()
+
+    window.mainloop() #infinite loop that runs until key return key is entered 
     
     return keyword[0]
 
@@ -83,6 +99,10 @@ def main():
     if( not debug ): #code we want to execute 
 
         keyword = build_window()
+
+        if( keyword == "" ): #error handling to ensure some string was entered 
+            print("ERROR: Please enter a valid keyword to search files for")
+            exit()
 
         files = filedialog.askopenfilenames()
         file_names = [None] * len(files)
