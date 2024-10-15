@@ -3,13 +3,11 @@ from tkinter import filedialog
 from tkinter import messagebox
 import os
 
-input = ""
-
 def buildWindow():
 
-
-    def get_input():
-        input = entry.get()
+#https://stackoverflow.com/questions/35662844/how-do-i-get-the-entrys-value-in-tkinter
+    def get_input(entry):
+        print(entry.widget.get())
 
     window = tk.Tk()
     window.title("File Parser for Security Policies")
@@ -17,14 +15,9 @@ def buildWindow():
 
     entry = tk.Entry(window, width=40)
     entry.pack()
-    
-    submit = tk.Button(window, text="Enter", command=get_input())
-    submit.pack()
+    entry.bind("<Return>", get_input)
 
     window.mainloop()
-
-    print(input)
-
 
 
 buildWindow()
