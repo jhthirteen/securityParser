@@ -8,6 +8,24 @@ from tkinter import filedialog
 
 debug = False
 
+def build_window():
+    keyword = []
+    def get_input(entry):
+        keyword.append(entry.widget.get())
+        window.destroy()
+    
+    window = tk.Tk()
+    window.title("File Parser for Security Policies")
+    window.geometry("500x500")
+
+    entry = tk.Entry(window, width=40)
+    entry.pack()
+    entry.bind("<Return>", get_input)
+
+    window.mainloop()
+    
+    return keyword[0]
+
 def clean():
     try:
         shutil.rmtree('text_docs')
@@ -61,16 +79,11 @@ def search_for_text(key, files):
             print("No instances found")
         
 def main():
-    if( len(sys.argv) < 2 ):
-        print("invoke as python3 fileIterator.py <keyword>")
-        exit()
 
     if( not debug ): #code we want to execute 
 
-        keyword = sys.argv[1]
+        keyword = build_window()
 
-        #window = tk.Tk()
-        #window.title("File Parser for Security Policies")
         files = filedialog.askopenfilenames()
         file_names = [None] * len(files)
         for i in range(len(files)):
