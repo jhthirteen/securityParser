@@ -46,10 +46,15 @@ def clean():
     try:
         shutil.rmtree('text_docs')
     except:
-        print("no 'text_docs directory found to delete")
+        print("Build failed: No text_docs directory to remove")
 
 def unzip_docx(file_path):
-    docx = zipfile.ZipFile(file_path, 'r')
+    try:
+        docx = zipfile.ZipFile(file_path, 'r')
+    except:
+        print(file_path + " is not a .docx file")
+        clean()
+        exit()
     docx.extract('word/document.xml') #extract the xml file containing text contents
     end_location = file_path.find('.')
     file_name = './text_docs/' + file_path[0:end_location] + '.xml'
@@ -72,7 +77,10 @@ def get_text(xml_tree_root):
     return(text_formatted)
 
 def initParser():
-    os.mkdir('text_docs')
+    try:
+        os.mkdir('text_docs')
+    except:
+        return
 
 def pull_xml(files):
     for i in range(len(files)): #pull all xml files out
