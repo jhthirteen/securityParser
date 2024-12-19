@@ -34,9 +34,19 @@ def get_text_streams(objects):
     streams = []
     for obj in objects:
         if( ("stream" in obj) and ("endstream" in obj) ):
-            print(obj)
-
-    print(len(objects))
+            stream_match = re.search(r'stream(.*?)endstream', obj, re.DOTALL)
+            if stream_match:
+                stream_content = stream_match.group(1).strip()
+                try:
+                    # Attempt to decompress the stream if it's compressed
+                    decompressed_content = zlib.decompress(stream_content.encode('latin1'))
+                    streams.append(decompressed_content.decode('latin1'))
+                    print(decompressed_content.decode('latin1'))
+                except zlib.error:
+                    print("Could not decompress stream. It might not be compressed.")
+                except UnicodeDecodeError:
+                    print("Decompressed content could not be decoded as text.")
+    return streams
 
 
 
