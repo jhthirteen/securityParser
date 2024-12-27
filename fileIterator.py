@@ -42,25 +42,27 @@ def build_window():
     
     return keyword[0]
 
-def clean():
+def clean(working_directory):
     try:
-        shutil.rmtree('text_docs')
+        shutil.rmtree(working_directory + '/text_docs')
     except:
         print("Build failed: No text_docs directory to remove")
 
-def unzip_docx(file_path):
+def unzip_docx(file_path, working_directory):
     try:
         docx = zipfile.ZipFile(file_path, 'r')
     except:
         print(file_path + " is not a .docx file")
         clean()
         exit()
-    docx.extract('word/document.xml') #extract the xml file containing text contents
-    end_location = file_path.find('.')
-    file_name = './text_docs/' + file_path[0:end_location] + '.xml'
-    shutil.move('./word/document.xml', './text_docs') #move to home directory
-    os.rename('./text_docs/document.xml', file_name)
-    os.rmdir('./word') #delete the extracted directory
+    docx.extract('word/document.xml', working_directory) #extract the xml file containing text contents
+    dot_location = file_path.find('.')
+    slash_location = file_path.rfind('/')
+    file_renamed = working_directory + '/text_docs/' + file_path[slash_location+1:dot_location] + '.xml'
+
+    shutil.move(working_directory + '/word/document.xml', working_directory + '/text_docs') #move to home directory
+    os.rename(working_directory + '/text_docs/document.xml', file_renamed)
+    os.rmdir(working_directory + '/word') #delete the extracted directory
 
 def get_xml_root(file_path): #(./extracted_info/word/document.xml) path 
     xml_tree = ElementTree.parse(file_path) #creates an parse tree out out of the xml file passed in 
@@ -76,20 +78,20 @@ def get_text(xml_tree_root):
 
     return(text_formatted)
 
-def initParser():
+def initParser(home_path):
     try:
-        os.mkdir('text_docs')
+        os.mkdir(home_path + '/' + 'text_docs')
     except:
         return
 
-def pull_xml(files):
+def pull_xml(files, working_directory):
     for i in range(len(files)): #pull all xml files out
-        unzip_docx(files[i])
+        unzip_docx(files[i], working_directory)
 
-def search_for_text(key, files):
+def search_for_text(key, files, working_directory):
     for i in range(len(files)):
         end_location = files[i].find('.')
-        file_name = './text_docs/' + files[i][0:end_location] + '.xml'
+        file_name = working_directory + '/text_docs/' + files[i][0:end_location] + '.xml'
         root = get_xml_root(file_name)
         text = get_text(root)
         instances = 0
@@ -118,12 +120,12 @@ def main():
             start_location = files[i].rfind('/')
             file_names[i] = files[i][start_location+1:len(files[i])]
 
-        #window.mainloop()
-
-        initParser()
-        pull_xml(file_names)
-        search_for_text(keyword, file_names)
-        clean()
+        dot_location = files[0].rfind('/')
+        text_docs_home_directory = files[0][0:dot_location]
+        initParser(text_docs_home_directory)
+        pull_xml(files, text_docs_home_directory)
+        search_for_text(keyword, file_names, text_docs_home_directory)
+        clean(text_docs_home_directory)
 
     if( debug ): #code to test if we want to debug 
         print(len(sys.argv))
