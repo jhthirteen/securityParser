@@ -39,6 +39,9 @@ def build_window():
     step_three_label.pack()
 
     window.mainloop() #infinite loop that runs until key return key is entered 
+
+    if( not keyword ):
+        return ""
     
     return keyword[0]
 
