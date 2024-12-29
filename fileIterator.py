@@ -12,15 +12,18 @@ def build_window():
     keyword = []
     def get_input(entry): #function that adds whatever string is entered in the field to the keyword array
         keyword.append(entry.widget.get()) #append the word the user entered in a box 
-        window.destroy()
+        entry.widget.config(state="disabled")
+        if( len(keyword) == int(sys.argv[1]) ):
+            window.destroy()
     
     window = tk.Tk()
     window.title("File Parser for Security Policies")
     window.geometry("1000x1000")
 
-    entry = tk.Entry(window, width=40)
-    entry.pack() #adds entry filed to the window 
-    entry.bind("<Return>", get_input) #key-binds the return key to call get_input function 
+    for i in range(int(sys.argv[1])):
+        entry = tk.Entry(window, width=40)
+        entry.pack() #adds entry filed to the window 
+        entry.bind("<Return>", get_input) #key-binds the return key to call get_input function 
 
     intro = tk.StringVar(window, "Quick .docx parser")
     intro_label = tk.Label(window, textvariable=intro)
@@ -43,7 +46,8 @@ def build_window():
     if( not keyword ):
         return ""
     
-    return keyword[0]
+    return keyword
+    #return keyword[0]
 
 def clean(working_directory):
     try:
@@ -93,23 +97,36 @@ def pull_xml(files, working_directory):
 
 def search_for_text(key, files, working_directory):
     for i in range(len(files)):
+        text_instances = []
+        unique_words_found = []
         end_location = files[i].find('.')
         file_name = working_directory + '/text_docs/' + files[i][0:end_location] + '.xml'
         root = get_xml_root(file_name)
         text = get_text(root)
-        instances = 0
-        print("\nSearching " + files[i][0:end_location] + '.xml' + ' for ' + key + ':\n')
+        print("Searching " + files[i][0:end_location] + '\n')
         for i in range(len(text)):
-            if( text[i].find(key) > 0 ):
-                instances += 1
-                print("Found instance " + str(instances) + ":\n" + text[i])
+            for k in range(len(key)):
+                if( text[i].find(key[k]) > 0 ):
+                    if( key[k] not in unique_words_found ):
+                        unique_words_found.append(text[i])
+                    if( text[i] not in text_instances ):
+                        text_instances.append(text[i])
         
-        if( instances == 0 ):
-            print("No instances found")
+        if( len(unique_words_found) == len(key) ):
+            for i in range(len(text_instances)):
+                print("instance " + str(i+1) + ":\n" + text_instances[i] + "\n")
+        
+        else:
+            print("Not found\n")
+
         
 def main():
 
     if( not debug ): #code we want to execute 
+        
+        if( len(sys.argv) <= 1 ):
+            print("ERROR: Please give number of keywords to search for as a command line argument")
+            exit()
 
         keyword = build_window()
 
