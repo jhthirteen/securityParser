@@ -108,7 +108,7 @@ def search_for_text(key, files, working_directory):
             for k in range(len(key)):
                 if( text[i].find(key[k]) > 0 ):
                     if( key[k] not in unique_words_found ):
-                        unique_words_found.append(text[i])
+                        unique_words_found.append(key[k])
                     if( text[i] not in text_instances ):
                         text_instances.append(text[i])
         
